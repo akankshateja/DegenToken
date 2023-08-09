@@ -9,26 +9,29 @@ contract DegenGamingToken is ERC20, Ownable {
         _mint(msg.sender, 1000000 * 10 ** decimals());
     }
 
-    function mint(address _to, uint256 _amount) external onlyOwner {
-        _mint(_to, _amount);
+    function mint(address account, uint256 amount) public onlyOwner {
+        _mint(account, amount);
     }
-    function transferTokens(address _reciever, uint amount) external{
-            require(balanceOf(msg.sender) >= amount, "you are not owner");
-            approve(msg.sender, amount);
-            transferFrom(msg.sender, _reciever, amount);
+    function burn(uint256 amount) public {
+        _burn(msg.sender, amount);
+    }
+
+    function transfer(address recipient, uint256 amount) public override returns (bool) {
+        require(recipient != address(0), "ERC20: transfer to the zero address is not allowed");
+        super.transfer(recipient, amount);
+        return true;
+    }
+
+    function gameStore() public pure returns(string memory) {
+            return "1. ProPlayer NFT value = 200 \n 2. SuperNinja value = 100 /n 3. DegenCap value = 75";
         }
 
-    function redeem(uint256 _amount) external {
-        require(_amount > 0, "Amount must be greater than 0");
-        require(balanceOf(msg.sender) >= _amount, "Insufficient balance");
-
-        _burn(msg.sender, _amount);
+    function redeem(uint256 amount) public {
+        require(balanceOf(msg.sender) >= amount, "Not enough tokens");
+        _burn(msg.sender, amount);
+        // Perform additional logic for redeeming in-game items
     }
-
-    function burn(uint256 _amount) external {
-        require(_amount > 0, "Amount must be greater than 0");
-        require(balanceOf(msg.sender) >= _amount, "Insufficient balance");
-
-        _burn(msg.sender, _amount);
+    function checkBalance() external view returns(uint){
+           return balanceOf(msg.sender);
     }
 }
